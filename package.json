@@ -1,21 +1,21 @@
 {
-  "name": "commando",
+  "name": "commander",
   "version": "1.0.0",
-  "description": "De centrale orderserver",
+  "description": "Der Commander für PlaceTUD ",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PlaceNL/Commando.git"
+    "url": "git+https://github.com/PlaceTUD/Commander.git"
   },
   "author": "NoahvdAa",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PlaceNL/Commando/issues"
+    "url": "https://github.com/PlaceTUD/Commander/issues"
   },
-  "homepage": "https://github.com/PlaceNL/Commando#readme",
+  "homepage": "https://github.com/PlaceTUD/Commander#readme",
   "dependencies": {
     "express.js": "^1.0.0",
     "get-pixels": "^3.3.3",
