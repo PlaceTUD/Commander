@@ -1,6 +1,6 @@
 {
   "name": "commander",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Commander (Server) of PlaceTUD ",
   "main": "index.js",
   "scripts": {

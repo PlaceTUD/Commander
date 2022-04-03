@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const ws = require('ws');
+const package = require('./package.json');
 
 const app = express();
 const getPixels = require('get-pixels');
@@ -26,6 +27,7 @@ if (fs.existsSync(`${__dirname}/data.json`)) {
 const server = app.listen(9000);
 const wsServer = new ws.Server({ server: server, path: '/api/ws' });
 
+app.get('/version', (req, res) => {res.json({ version: package.version })});
 app.use('/maps', (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
