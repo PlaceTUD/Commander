@@ -1,10 +1,12 @@
 {
   "name": "commander",
   "version": "1.0.0",
-  "description": "Der Commander für PlaceTUD",
+  "description": "Commander (Server) of PlaceTUD ",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "npm run start:dev",
+    "start:dev": "cross-env NODE_ENV=development PASSWORD=test node ./index.js",
+    "start:prod": "cross-env NODE_ENV=production node ./index.js",
     "docker": "npm run docker:build && npm run docker:export",
     "docker:build": "docker build . -t itzyanick/placetud-server",
     "docker:export": "docker save itzyanick/placetud-server > placetud-server.tar"
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/PlaceTUD/Commander#readme",
   "dependencies": {
+    "cross-env": "^7.0.3",
     "express.js": "^1.0.0",
     "get-pixels": "^3.3.3",
     "multer": "^1.4.4",
