@@ -1,7 +1,8 @@
+const package = require('./package.json');
+
 const express = require('express');
 const fs = require('fs');
 const ws = require('ws');
-const package = require('./package.json');
 
 const app = express();
 const getPixels = require('get-pixels');
@@ -18,6 +19,7 @@ var appData = {
     ]
 };
 var brandUsage = {};
+var userCount = 0;
 var socketId = 0;
 
 if (fs.existsSync(`${__dirname}/data.json`)) {
@@ -27,7 +29,6 @@ if (fs.existsSync(`${__dirname}/data.json`)) {
 const server = app.listen(9000);
 const wsServer = new ws.Server({ server: server, path: '/api/ws' });
 
-app.get('/version', (req, res) => {res.json({ version: package.version })});
 app.use('/maps', (req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     next();
@@ -37,12 +38,14 @@ app.use(express.static(`${__dirname}/static`));
 
 app.get('/api/stats', (req, res) => {
     res.json({
-        connectionCount: wsServer.clients.size,
+        rawConnectionCount: wsServer.clients.size,
+        connectionCount: userCount,
         ...appData,
         brands: brandUsage,
         date: Date.now()
     });
 });
+app.get('/version', (req, res) => {res.json({ version: package.version })});
 
 app.post('/updateorders', upload.single('image'), async (req, res) => {
     if (!req.body || !req.file || !req.body.reason || !req.body.password || req.body.password !== process.env.PASSWORD) {
@@ -65,9 +68,8 @@ app.post('/updateorders', upload.single('image'), async (req, res) => {
             return
         }
 
-
         if (pixels.data.length !== 16000000) {
-            res.send('Bestand moet 2000x2000 zijn!');
+            res.send('File must be 2000x2000!');
             fs.unlinkSync(req.file.path);
             return;
         }
@@ -103,6 +105,7 @@ app.post('/updateorders', upload.single('image'), async (req, res) => {
 wsServer.on('connection', (socket) => {
     socket.id = socketId++;
     socket.brand = 'unknown';
+    socket.lastActivity = Date.now() - (5 * 6 * 1000);
     console.log(`[${new Date().toLocaleString()}] [+] Client connected: ${socket.id}`);
 
     socket.on('close', () => {
@@ -137,6 +140,7 @@ wsServer.on('connection', (socket) => {
             case 'placepixel':
                 const { x, y, color } = data;
                 if (x === undefined || y === undefined || color === undefined && x < 0 || x > 1999 || y < 0 || y > 1999 || color < 0 || color > 32) return;
+                socket.lastActivity = Date.now();
                 // console.log(`[${new Date().toLocaleString()}] Pixel placed by ${socket.id}: ${x}, ${y}: ${color}`);
                 break;
             default:
@@ -147,7 +151,9 @@ wsServer.on('connection', (socket) => {
 });
 
 setInterval(() => {
-    brandUsage = Array.from(wsServer.clients).map(c => c.brand).reduce(function (acc, curr) {
+    const threshold = Date.now() - (11 * 60 * 1000); // 11 min cooldown.
+    userCount = Array.from(wsServer.clients).filter(c => c.lastActivity >= threshold).length;
+    brandUsage = Array.from(wsServer.clients).filter(c => c.lastActivity >= threshold).map(c => c.brand).reduce(function (acc, curr) {
         return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
     }, {});
 }, 1000);
