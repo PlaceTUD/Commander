@@ -3,3 +3,4 @@ uploads/
 .DS_Store
 data.json
 placetud-server.tar
+*-old.js
