@@ -1,15 +1,12 @@
 {
   "name": "commander",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Commander (Server) of PlaceTUD ",
   "main": "index.js",
   "scripts": {
     "start": "npm run start:dev",
     "start:dev": "cross-env NODE_ENV=development PASSWORD=test node ./index.js",
-    "start:prod": "cross-env NODE_ENV=production node ./index.js",
-    "docker": "npm run docker:build && npm run docker:export",
-    "docker:build": "docker build . -t itzyanick/placetud-server",
-    "docker:export": "docker save itzyanick/placetud-server > placetud-server.tar"
+    "start:prod": "cross-env NODE_ENV=production node ./index.js"
   },
   "repository": {
     "type": "git",
